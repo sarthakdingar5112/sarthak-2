@@ -1,0 +1,96 @@
+{% extends 'musicgen/base.html' %}
+{% load spotify_embed %}
+{% block title %}Analysis · MusicGen{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2>Analysis Result</h2>
+
+  <p class="muted">Prompt:</p>
+  <p style="white-space:pre-wrap">{{ prompt.text }}</p>
+
+  {% if prompt.analysis %}
+    <div class="row">
+      <div class="col">
+        <h3>Top moods</h3>
+        <ul>
+          {% for label, score in prompt.analysis.top_moods %}
+            <li>{{ label }} — {{ score|floatformat:2 }}</li>
+          {% empty %}
+            <li class="muted">No mood scores.</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="col">
+        <h3>Sentiment</h3>
+        <p>
+          {{ prompt.analysis.sentiment_label|title }}
+          ({{ prompt.analysis.sentiment_score|floatformat:2 }})
+        </p>
+      </div>
+    </div>
+
+    <h3>Songs you can play right here</h3>
+    <ul class="tracks">
+      {% for t in prompt.analysis.spotify_tracks %}
+        <li style="margin-bottom:14px;">
+          <div><strong>{{ t.name }}</strong> — {{ t.artists }}</div>
+
+          {# Prefer Spotify embed if full URL is present #}
+          {% if t.spotify_url %}
+            <div style="margin-top:6px;">
+              <iframe
+                src="{{ t.spotify_url|spotify_embed }}"
+                width="100%" height="152" frameborder="0"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
+              </iframe>
+            </div>
+          {% elif t.preview_url %}
+            <audio controls preload="none" style="width:100%; margin-top:6px;">
+              <source src="{{ t.preview_url }}" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </audio>
+          {% else %}
+            <span class="muted">No preview available</span>
+          {% endif %}
+
+          {% if t.spotify_url %}
+            <div style="margin-top:6px;">
+              <a href="{{ t.spotify_url }}" target="_blank" rel="noopener">Open in Spotify</a>
+            </div>
+          {% endif %}
+        </li>
+      {% empty %}
+        <li class="muted">No Spotify tracks (check credentials or try a different prompt).</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">No analysis found.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>Generate Music (from this prompt)</h3>
+  <form method="post" action="{% url 'musicgen:generate' %}">
+    {% csrf_token %}
+    {{ gen_form.as_p }}
+    <button class="btn" type="submit">Generate</button>
+  </form>
+
+  {% with gens=prompt.generations.all %}
+    {% if gens %}
+      <h4 style="margin-top:10px;">Previous Generations</h4>
+      <ul>
+        {% for g in gens %}
+          <li>
+            <a href="{% url 'musicgen:generation_detail' g.id %}">
+              Generation #{{ g.id }}
+            </a> — {{ g.created_at }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+</div>
+{% endblock %}

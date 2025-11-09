@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>{% block title %}MusicGen{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --bg:#0f1220; --card:#171a2b; --accent:#6ae3ff; --text:#e6e7ee; --muted:#9aa3b2; }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,Segoe UI,Roboto,Arial}
+    a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+    header{display:flex;align-items:center;gap:16px;padding:14px 18px;background:#0b0e1b;position:sticky;top:0;border-bottom:1px solid #22263d}
+    header .brand{font-weight:700;letter-spacing:.3px}
+    header nav a{margin-right:14px}
+    .container{max-width:980px;margin:24px auto;padding:0 14px}
+    .card{background:var(--card);border:1px solid #22263d;border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:0 10px 24px rgba(0,0,0,.24)}
+    .btn{background:linear-gradient(90deg,#4bb9ff,#6ae3ff);color:#0b0e1b;border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+    .btn:hover{filter:brightness(1.05)} .muted{color:var(--muted)}
+    input, select, textarea{width:100%;background:#0f1325;color:var(--text);border:1px solid #2a2f4b;border-radius:10px;padding:10px}
+    form p{margin:10px 0}
+    .grid{display:grid;gap:14px}
+    .tracks li{margin:10px 0;padding:10px;border:1px solid #2a2f4b;border-radius:10px}
+    audio{width:100%;margin-top:6px}
+    .row{display:flex;gap:14px;flex-wrap:wrap}
+    .col{flex:1 1 280px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><a href="{% url 'musicgen:home' %}">🎵 MusicGen</a></div>
+    <nav>
+      <a href="{% url 'musicgen:analyze' %}">Text Analyze</a>
+      <a href="{% url 'musicgen:image_analyze' %}">Image Analyze</a>
+      {% if request.user.is_authenticated %}
+        <span class="muted">Hi {{ request.user.username }}</span>
+        <a href="{% url 'musicgen:logout' %}">Logout</a>
+      {% else %}
+        <a href="{% url 'musicgen:login' %}">Login</a>
+        <a href="{% url 'musicgen:register' %}">Register</a>
+      {% endif %}
+    </nav>
+  </header>
+  <div class="container">
+    {% if messages %}
+      <div class="card">
+        {% for m in messages %}
+          <p>{{ m }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

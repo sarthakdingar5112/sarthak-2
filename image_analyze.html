@@ -1,0 +1,13 @@
+{% extends 'musicgen/base.html' %}
+{% block content %}
+<div class="card">
+  <h2>Analyze Image → Mood → Songs</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p>{{ form.image.label_tag }} {{ form.image }}</p>
+    <p>{{ form.language.label_tag }} {{ form.language }}</p>
+    <p>{{ form.do_spotify }} {{ form.do_spotify.label_tag }}</p>
+    <button class="btn" type="submit">Analyze Image</button>
+  </form>
+</div>
+{% endblock %}

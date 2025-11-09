@@ -1,0 +1,33 @@
+{% extends 'musicgen/base.html' %}
+{% block content %}
+<div class="card">
+  <h2>Generated Audio</h2>
+  <p><strong>Prompt:</strong> {{ gen.prompt.text }}</p>
+  <p><strong>Model:</strong> {{ gen.model_name }}</p>
+  <p><strong>Duration:</strong> {{ gen.duration_s }}s</p>
+
+  {% if gen.audio_blob %}
+    <audio controls style="width:100%; margin-top:8px;">
+      <source src="{% url 'musicgen:audio_blob' gen.audio_blob.id %}" type="{{ gen.audio_blob.content_type }}">
+      Your browser does not support the audio element.
+    </audio>
+    <p style="margin-top:6px;">
+      <a class="btn" href="{% url 'musicgen:audio_blob' gen.audio_blob.id %}">Download / Open</a>
+    </p>
+  {% else %}
+    <p><em>No audio attached.</em></p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>Metadata</h3>
+  <ul>
+    <li>temperature: {{ gen.temperature }}</li>
+    <li>top_k: {{ gen.top_k|default:"-" }}</li>
+    <li>top_p: {{ gen.top_p|default:"-" }}</li>
+    <li>guidance_scale: {{ gen.guidance_scale }}</li>
+    <li>seed: {{ gen.seed|default:"-" }}</li>
+    <li>created: {{ gen.created_at }}</li>
+  </ul>
+</div>
+{% endblock %}

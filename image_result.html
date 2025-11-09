@@ -1,0 +1,40 @@
+{% extends 'musicgen/base.html' %}
+{% block content %}
+<div class="card">
+  <h2>Image Mood Result</h2>
+  <img src="{{ img.image.url }}" alt="uploaded" style="max-width:100%;border-radius:8px;"/>
+
+  <h3 style="margin-top:12px;">Predicted moods</h3>
+  <ul>
+    {% for label, score in img.predicted_moods %}
+      <li>{{ label }} — {{ score|floatformat:2 }}</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="card">
+  <h3>Spotify suggestions</h3>
+  {% if img.spotify_tracks %}
+    <ul>
+      {% for t in img.spotify_tracks %}
+        <li style="margin-bottom:10px;">
+          <div><strong>{{ t.name }}</strong> — {{ t.artists }}</div>
+          {% if t.preview_url %}
+            <audio controls style="width:100%; margin-top:4px;">
+              <source src="{{ t.preview_url }}" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </audio>
+          {% else %}
+            <div><em>No preview available</em></div>
+          {% endif %}
+          {% if t.spotify_url %}
+            <div><a href="{{ t.spotify_url }}" target="_blank" rel="noreferrer">Open in Spotify</a></div>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p><em>No Spotify results.</em></p>
+  {% endif %}
+</div>
+{% endblock %}

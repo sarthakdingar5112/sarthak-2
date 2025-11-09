@@ -1,0 +1,38 @@
+{% extends 'musicgen/base.html' %}
+{% block content %}
+<div class="card">
+  <h2>Analyze Prompt → Moods & Songs</h2>
+
+  {% if form.errors %}
+    <div style="background:#ffecec;border:1px solid #f5aca6;padding:8px;border-radius:6px;margin-bottom:12px;">
+      <strong>Fix the errors below:</strong>
+      <ul>
+        {% for field in form %}
+          {% for e in field.errors %}
+            <li>{{ field.label }}: {{ e }}</li>
+          {% endfor %}
+        {% endfor %}
+        {% for e in form.non_field_errors %}
+          <li>{{ e }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <p>
+      {{ form.prompt.label_tag }}<br>
+      {{ form.prompt }}
+    </p>
+    <p>
+      {{ form.language.label_tag }}<br>
+      {{ form.language }}
+    </p>
+    <p>
+      {{ form.do_spotify }} {{ form.do_spotify.label_tag }}
+    </p>
+    <button class="btn" type="submit">Analyze</button>
+  </form>
+</div>
+{% endblock %}
